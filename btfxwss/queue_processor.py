@@ -3,6 +3,7 @@ import logging
 from threading import Thread, Event
 from queue import Empty, Queue
 from collections import defaultdict
+import multiprocessing
 
 # Import Third-Party
 
@@ -53,7 +54,7 @@ class QueueProcessor(Thread):
         # dict to register a method with a channel id
         self.channel_handlers = {}
 
-        self.raw_data = Queue()
+        self.raw_data = multiprocessing.Queue()
 
         # Keeps track of last update to a channel by id.
         self.last_update = {}
