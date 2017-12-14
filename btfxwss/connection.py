@@ -25,7 +25,8 @@ class WebSocketConnection(Thread):
     activity and continuing of activity.
     """
     def __init__(self, *args, url=None, timeout=None,
-                 reconnect_interval=None, log_level=None, **kwargs):
+                 reconnect_interval=None, log_level=None,
+                 on_reconnect, **kwargs):
         """Initialize a WebSocketConnection Instance.
 
         :param args: args for Thread.__init__()
@@ -70,6 +71,11 @@ class WebSocketConnection(Thread):
         if log_level == logging.DEBUG:
             websocket.enableTrace(True)
         self.log.setLevel(level=log_level if log_level else logging.INFO)
+
+        if on_reconnect is not None:
+            self.on_reconnect = on_reconnect
+        else:
+            self.on_reconnect = lambda: None
 
         # Call init of Thread and pass remaining args and kwargs
         Thread.__init__(self)
@@ -179,6 +185,8 @@ class WebSocketConnection(Thread):
         self.connected.set()
         self.send_ping()
         self._start_timers()
+        if self.reconnect_required.is_set():
+            self.on_reconnect()
 
     def _on_error(self, ws, error):
         self.log.info("Connection Error - %s", error)
