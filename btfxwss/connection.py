@@ -28,7 +28,6 @@ class WebSocketConnection(Thread):
                  reconnect_interval=None, log_level=None, **kwargs):
         """Initialize a WebSocketConnection Instance.
 
-        :param data_q: Queue(), connection to the Client Class
         :param args: args for Thread.__init__()
         :param url: websocket address, defaults to v2 websocket.
         :param timeout: timeout for connection; defaults to 10s
@@ -49,7 +48,8 @@ class WebSocketConnection(Thread):
         self.connected = Event()
         self.disconnect_called = Event()
         self.reconnect_required = Event()
-        self.reconnect_interval = reconnect_interval if reconnect_interval else 10
+        self.reconnect_interval = (reconnect_interval
+                                   if reconnect_interval else 10)
         self.paused = Event()
 
         # Setup Timer attributes
@@ -413,8 +413,3 @@ class WebSocketConnection(Thread):
         log.debug("_data_handler(): Passing %s to client..",
                   data)
         self.pass_to_client('data', data, ts)
-
-
-
-
-
